@@ -1,0 +1,8 @@
+Upstream: https://github.com/lachlanmcg123/CONFOLD
+Revision: ceafbdc542a2aca48134ba658139a128a8241f7a (main)
+Imported: 2026-08-16
+
+This is a deliberately minimal, unmodified runtime vendor snapshot. It retains
+only algo.py, foldrm.py, utils.py, and the upstream MIT LICENSE. The upstream
+datasets, notebooks, CLI, backup files, and other examples are intentionally
+excluded because AP4Fed uses its own distillation data and adapter.

@@ -1,0 +1,159 @@
+{
+  "metrics": {
+    "n": 80,
+    "label_counts": {
+      "OFF": 75,
+      "ON": 5
+    },
+    "fired": 80,
+    "no_fire": 0,
+    "coverage": 1.0,
+    "correct_all": 80,
+    "accuracy_all_no_fire_incorrect": 1.0,
+    "accuracy_when_fired": 1.0,
+    "on_true_positive": 5,
+    "on_false_positive": 0,
+    "on_false_negative": 0,
+    "on_precision": 1.0,
+    "on_recall": 1.0,
+    "on_f1": 1.0,
+    "mean_fired_confidence": 0.8896163750000007,
+    "inverse_brier_score": 0.98467303586375,
+    "always_off_accuracy": 0.9375
+  },
+  "asp_rules": [
+    "y_cs_applied(X,'off') :- comm_frac(X,N12), N12>0.19982, not ab1(X), not ab3(X), not ab4(X). [confidence: 0.91509]",
+    "y_cs_applied(X,'off') :- comm_frac(X,N12), N12<=0.19982. [confidence: 0.8875]",
+    "y_cs_applied(X,'on') :- prev_cs(X,'off'). [confidence: 0.67857]",
+    "ab1(X) :- val_f1(X,N5), N5>0.8166, comm_frac(X,N12), N12<=0.20676.",
+    "ab2(X) :- round_idx(X,N3), N3>4.0, round_idx(X,N3), N3<=5.0.",
+    "ab3(X) :- comm_max(X,N10), N10<=61.23, comm_frac(X,N12), N12<=0.2178, not ab2(X).",
+    "ab4(X) :- val_f1(X,N5), N5>0.7125, comm_frac(X,N12), N12>0.32706."
+  ],
+  "rules": [
+    {
+      "predict": "OFF",
+      "conditions": [
+        {
+          "feature": "comm_frac",
+          "relation": ">",
+          "value": 0.19981830570065864
+        }
+      ],
+      "exceptions": [
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "comm_frac",
+              "relation": "<=",
+              "value": 0.20675842597494265
+            },
+            {
+              "feature": "val_f1",
+              "relation": ">",
+              "value": 0.8166
+            }
+          ],
+          "exceptions": [],
+          "confidence": 0
+        },
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "comm_max",
+              "relation": "<=",
+              "value": 61.23
+            },
+            {
+              "feature": "comm_frac",
+              "relation": "<=",
+              "value": 0.21780065744588478
+            }
+          ],
+          "exceptions": [
+            {
+              "predict": null,
+              "conditions": [
+                {
+                  "feature": "round_idx",
+                  "relation": ">",
+                  "value": 4.0
+                },
+                {
+                  "feature": "round_idx",
+                  "relation": "<=",
+                  "value": 5.0
+                }
+              ],
+              "exceptions": [],
+              "confidence": 0
+            }
+          ],
+          "confidence": 0
+        },
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "comm_frac",
+              "relation": ">",
+              "value": 0.32706011328339124
+            },
+            {
+              "feature": "val_f1",
+              "relation": ">",
+              "value": 0.7125
+            }
+          ],
+          "exceptions": [],
+          "confidence": 0
+        }
+      ],
+      "confidence": 0.91509,
+      "rule_number": 1,
+      "raw_condition_coverage": 44,
+      "raw_condition_coverage_fraction": 0.55,
+      "effective_first_match_coverage": 44,
+      "effective_first_match_coverage_fraction": 0.55,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    },
+    {
+      "predict": "OFF",
+      "conditions": [
+        {
+          "feature": "comm_frac",
+          "relation": "<=",
+          "value": 0.19981830570065864
+        }
+      ],
+      "exceptions": [],
+      "confidence": 0.8875,
+      "rule_number": 2,
+      "raw_condition_coverage": 31,
+      "raw_condition_coverage_fraction": 0.3875,
+      "effective_first_match_coverage": 31,
+      "effective_first_match_coverage_fraction": 0.3875,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    },
+    {
+      "predict": "ON",
+      "conditions": [
+        {
+          "feature": "prev_cs",
+          "relation": "==",
+          "value": "OFF"
+        }
+      ],
+      "exceptions": [],
+      "confidence": 0.67857,
+      "rule_number": 3,
+      "raw_condition_coverage": 75,
+      "raw_condition_coverage_fraction": 0.9375,
+      "effective_first_match_coverage": 5,
+      "effective_first_match_coverage_fraction": 0.0625,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    }
+  ]
+}

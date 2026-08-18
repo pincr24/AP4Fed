@@ -1,0 +1,2 @@
+# The vendored algo.py imports scipy.stats.binom at module load.
+scipy>=1.10,<2

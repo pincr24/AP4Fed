@@ -2,6 +2,9 @@ pycache/*
 *.pyc
 *.log
 **/data
+!distill/data/
+!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/
+!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/**
 **/Local/img
 **/Local/model_weights
 **/Docker/img

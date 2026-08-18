@@ -1,0 +1,135 @@
+{
+  "metrics": {
+    "n": 80,
+    "label_counts": {
+      "OFF": 74,
+      "ON": 6
+    },
+    "fired": 80,
+    "no_fire": 0,
+    "coverage": 1.0,
+    "correct_all": 80,
+    "accuracy_all_no_fire_incorrect": 1.0,
+    "accuracy_when_fired": 1.0,
+    "on_true_positive": 6,
+    "on_false_positive": 0,
+    "on_false_negative": 0,
+    "on_precision": 1.0,
+    "on_recall": 1.0,
+    "on_f1": 1.0,
+    "mean_fired_confidence": 0.8881010000000005,
+    "inverse_brier_score": 0.98418264636,
+    "always_off_accuracy": 0.925
+  },
+  "asp_rules": [
+    "y_mc_applied(X,'off') :- train_mean(X,N7), N7<=109.67. [confidence: 0.91964]",
+    "y_mc_applied(X,'off') :- prev_hdh(X,'off'), not ab1(X), not ab2(X), not ab3(X). [confidence: 0.875]",
+    "y_mc_applied(X,'on') :- prev_cs(X,'off'). [confidence: 0.7]",
+    "ab1(X) :- total_round_time(X,N6), N6<=172.67.",
+    "ab2(X) :- total_round_time(X,N6), N6>220.2, total_round_time(X,N6), N6<=226.68.",
+    "ab3(X) :- not prev_mc(X,'off'), train_mean(X,N7), N7>161.592."
+  ],
+  "rules": [
+    {
+      "predict": "OFF",
+      "conditions": [
+        {
+          "feature": "train_mean",
+          "relation": "<=",
+          "value": 109.67
+        }
+      ],
+      "exceptions": [],
+      "confidence": 0.91964,
+      "rule_number": 1,
+      "raw_condition_coverage": 47,
+      "raw_condition_coverage_fraction": 0.5875,
+      "effective_first_match_coverage": 47,
+      "effective_first_match_coverage_fraction": 0.5875,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    },
+    {
+      "predict": "OFF",
+      "conditions": [
+        {
+          "feature": "prev_hdh",
+          "relation": "==",
+          "value": "OFF"
+        }
+      ],
+      "exceptions": [
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "total_round_time",
+              "relation": "<=",
+              "value": 172.67
+            }
+          ],
+          "exceptions": [],
+          "confidence": 0
+        },
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "total_round_time",
+              "relation": ">",
+              "value": 220.2
+            },
+            {
+              "feature": "total_round_time",
+              "relation": "<=",
+              "value": 226.68
+            }
+          ],
+          "exceptions": [],
+          "confidence": 0
+        },
+        {
+          "predict": null,
+          "conditions": [
+            {
+              "feature": "train_mean",
+              "relation": ">",
+              "value": 161.592
+            },
+            {
+              "feature": "prev_mc",
+              "relation": "!=",
+              "value": "OFF"
+            }
+          ],
+          "exceptions": [],
+          "confidence": 0
+        }
+      ],
+      "confidence": 0.875,
+      "rule_number": 2,
+      "raw_condition_coverage": 31,
+      "raw_condition_coverage_fraction": 0.3875,
+      "effective_first_match_coverage": 27,
+      "effective_first_match_coverage_fraction": 0.3375,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    },
+    {
+      "predict": "ON",
+      "conditions": [
+        {
+          "feature": "prev_cs",
+          "relation": "==",
+          "value": "OFF"
+        }
+      ],
+      "exceptions": [],
+      "confidence": 0.7,
+      "rule_number": 3,
+      "raw_condition_coverage": 75,
+      "raw_condition_coverage_fraction": 0.9375,
+      "effective_first_match_coverage": 6,
+      "effective_first_match_coverage_fraction": 0.075,
+      "effective_first_match_precision_for_predicted_label": 1.0
+    }
+  ]
+}
