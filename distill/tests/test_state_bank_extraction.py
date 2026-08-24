@@ -17,6 +17,7 @@ from archive_extractor import (  # noqa: E402
     write_extraction,
 )
 from build_state_bank import load_source_list  # noqa: E402
+from decision_state import build_live_state  # noqa: E402
 
 
 AP_COLUMN = (
@@ -174,6 +175,30 @@ class ConfiguredExtractorTest(unittest.TestCase):
         self.assertEqual(expected_source, jobs[0].experiment.source)
         self.assertEqual("archive/ag-news/random", jobs[0].experiment.source_id)
         self.assertEqual(expected_output, jobs[0].output)
+
+    def test_live_prefix_state_matches_archive_reconstruction(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source = self.make_configuration(Path(tmp))
+            config = json.loads((source / "config.json").read_text(encoding="utf-8"))
+            with (source / "r1.csv").open(newline="", encoding="utf-8") as stream:
+                rows = list(csv.DictReader(stream))
+            extracted = extract_experiment(
+                ExperimentSource(source, "archive/ag-news/random")
+            ).states
+
+        for decision_idx in (1, 2):
+            live_rows = [
+                row for row in rows if int(row["FL Round"]) <= decision_idx
+            ]
+            live_state = build_live_state(config, live_rows, decision_idx)
+            archived_state = {
+                feature: (
+                    "" if extracted[decision_idx - 1][feature] == ""
+                    else str(extracted[decision_idx - 1][feature])
+                )
+                for feature in live_state
+            }
+            self.assertEqual(archived_state, live_state)
 
 
 if __name__ == "__main__":

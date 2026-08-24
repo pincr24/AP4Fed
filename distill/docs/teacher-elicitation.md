@@ -4,6 +4,19 @@
 with AP4Fed's single-agent teacher. It does not choose states, mutate the state
 bank, or assign archived outcomes to newly queried actions.
 
+The implementation is separated by responsibility while retaining the same
+user-facing command:
+
+- `teacher_campaign.py` validates selection manifests and resolves them against
+  a recreated, hash-checked state bank;
+- `teacher_adapter.py` reconstructs the Docker teacher view, builds and parses
+  the normal AP4Fed prompt, and applies the selector safety rule;
+- `teacher_elicitor.py` owns durable query attempts, provenance, resume
+  behavior, model identity, output artifacts, and the command-line interface.
+
+This boundary keeps offline campaign data handling separate from the runtime
+teacher interface that the later decide-or-defer pipeline will reuse.
+
 ## Inputs
 
 The command requires three separately versioned inputs:

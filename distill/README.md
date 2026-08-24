@@ -26,12 +26,16 @@ AP4Fed trajectories
 ```
 
 The repository currently provides state extraction, campaign assembly, selective
-offline teacher labelling, and a frozen CONFOLD baseline. Sprint 02 is expanding this
-into a broader labelled state bank and auditing its coverage. Calibrated dispatch and
-closed-loop evaluation belong to later sprints. The active milestone and its actual
-check results are recorded in
-[the Sprint 02 implementation report](docs/sprint-02-data-coverage.md), keeping this
-overview focused on the stable workflow.
+offline teacher labelling, a frozen CONFOLD baseline, and the versioned interfaces for
+validated rules, dispatch, and live decision traces. Sprint 02 still owns the broader
+labelled state bank and coverage audit. Sprint 03 now includes the opt-in always-defer,
+shadow, and qualification-active runtime paths. Deterministic checks pass, but the paired
+Docker trajectories and live/offline state-parity gate remain to be run after review.
+The implementation milestones are recorded in
+[the Sprint 03 runtime-interface report](docs/sprint-03-runtime-interfaces.md) and
+[the v0 live-capture report](docs/sprint-03-v0-live-capture.md), with the provisional
+rule path in [the qualification-policy report](docs/sprint-03-qualification-policy.md), keeping this overview
+focused on the stable workflow.
 
 ## Stable data interfaces
 
@@ -80,12 +84,26 @@ outcome cannot be presented as the effect of the newly elicited action.
 
 ## Available components
 
-- `archive_extractor.py` — validates one AP4Fed experiment configuration, reconstructs Feature
-  Specification v1 states, and writes the states with their provenance.
+- `decision_state.py` — builds the normalized Feature Specification v1 state shared by archive
+  reconstruction and the live policy path.
+- `archive_extractor.py` — validates one AP4Fed experiment configuration, reads its archived
+  metrics, and writes the resulting states with their provenance.
 - `build_state_bank.py` — extracts either one source or a versioned JSON source list; it
   defaults to unlabelled states for offline teacher labelling.
 - `teacher_elicitor.py` — validates a frozen state selection, reconstructs the
   teacher-visible history, and writes resumable offline label attempts.
+- `policy_interfaces.py` — validates versioned runtime rule artifacts, dispatch
+  requests/results, and live decision traces without activating a policy.
+- `qualification_rules.py` — mechanically translates the pinned Sprint 01 ordered
+  CONFOLD reports into a separately labelled qualification-only artifact.
+- `rule_dispatch.py` — evaluates all rules per head and implements deterministic
+  whole-decision deferral.
+- `live_policy.py` — implements opt-in Feature Specification v1 capture, policy
+  dispatch, guarded application, and immutable decision traces.
+- `build_sprint01_qualification_rules.py` — produces the provisional artifact from a
+  clean reviewed checkout.
+- `prepare_sprint03_run.py` and `configs/sprint03_agnews_base.json` — prepare paired
+  always-defer and active Docker configurations from the frozen AG News setting.
 - `extract_paper_decision_dataset.py` — preserves the independent Sprint 01 baseline
   command and reproduces its frozen output.
 - `run_confold_baseline.py` — runs the initial symbolic CONFOLD baseline.
@@ -191,6 +209,13 @@ schema, run command, resume rules, artifacts, and interpretation constraint.
   result, and interpretation limits.
 - [Sprint 02 data coverage](docs/sprint-02-data-coverage.md) — reusable extraction
   milestone, campaign inventory, checks, and remaining work.
+- [Sprint 03 runtime interfaces](docs/sprint-03-runtime-interfaces.md) — validated
+  rule, dispatcher, and live-trace schemas plus their attribution constraints.
+- [Sprint 03 v0 live capture](docs/sprint-03-v0-live-capture.md) — opt-in
+  always-defer configuration, trace layout, checks, and the remaining live gate.
+- [Sprint 03 qualification policy](docs/sprint-03-qualification-policy.md) — pinned
+  rule translation, exact AG News configuration, shadow/active behavior, and run
+  preparation.
 - [Offline teacher elicitation](docs/teacher-elicitation.md) — selection input,
   prompt reconstruction, run artifacts, and resume behaviour.
 - [Dataset specification](docs/dataset-specification.md) — schemas, alignment,

@@ -5,8 +5,11 @@ import random
 import copy
 import re
 import glob
+import importlib
+import sys
 import time
 import urllib.request, urllib.error
+from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from logging import INFO
 from flwr.common.logger import log
@@ -43,6 +46,27 @@ from rationale_store import (
     _persist_round_rationales,
 )
 
+
+def _load_live_policy_module():
+    distill_root = Path(__file__).resolve().parents[1] / "distill"
+    existing = sys.modules.get("live_policy")
+    if existing is not None and Path(existing.__file__).resolve().parent != distill_root:
+        raise RuntimeError(
+            f"live_policy is already loaded from unexpected path {existing.__file__}"
+        )
+    distill_text = str(distill_root)
+    inserted = distill_text not in sys.path
+    if inserted:
+        sys.path.insert(0, distill_text)
+    try:
+        module = importlib.import_module("live_policy")
+        if Path(module.__file__).resolve().parent != distill_root:
+            raise RuntimeError(f"loaded live_policy from unexpected path {module.__file__}")
+        return module
+    finally:
+        if inserted:
+            sys.path.remove(distill_text)
+
 class AdaptationManager(AgentPolicyMixin):
     def __init__(self, enabled: bool, default_config: Dict, use_rag=USE_RAG):
         self.name = "AdaptationManager"
@@ -51,6 +75,13 @@ class AdaptationManager(AgentPolicyMixin):
         self._last_round_client_ids: List[str] = []
         self.default_config = default_config
         self.policy = str(default_config.get("adaptation", "None")).strip()
+        self._live_policy_module = None
+        self.live_policy_settings = None
+        if self.policy.lower() == "distilled policy":
+            self._live_policy_module = _load_live_policy_module()
+            self.live_policy_settings = self._live_policy_module.load_live_policy_settings(
+                default_config, Path.cwd(),
+            )
         self.total_rounds = int(default_config.get("rounds", 1))
         self.enabled = enabled and (self.policy.lower() != "none")
         self.sa_model = default_config.get("LLM") or "llama3.2:1b"
@@ -250,11 +281,74 @@ class AdaptationManager(AgentPolicyMixin):
         logs.append(f"[ROUND {current_round}] Random policy executed")
         return new_config, logs
 
+    def _decide_distilled_policy(
+        self, base_config: Dict, current_round: int,
+    ) -> Tuple[Dict, List[str]]:
+        if self._live_policy_module is None or self.live_policy_settings is None:
+            raise RuntimeError("Distilled Policy runtime was not initialized")
+        runtime = self._live_policy_module
+        started = time.perf_counter_ns()
+        metrics_csv = Path(PERFORMANCE_DIR) / "FLwithAP_performance_metrics.csv"
+        request = runtime.build_policy_request(
+            self.live_policy_settings,
+            base_config,
+            metrics_csv,
+            current_round,
+        )
+        dispatch = runtime.dispatch_policy(self.live_policy_settings, request)
+        teacher_audit: Optional[Dict] = None
+        rule_application: Optional[Dict] = None
+        if dispatch["requires_teacher"]:
+            teacher_audit = {}
+            next_config, logs = self._decide_single_agent(
+                base_config,
+                current_round,
+                teacher_policy=self.live_policy_settings.teacher_policy,
+                audit=teacher_audit,
+            )
+            if teacher_audit.get("status") == "success":
+                teacher_audit["applied_action"] = runtime.action_from_config(next_config)
+            decision_source = (
+                "teacher" if teacher_audit.get("status") == "success"
+                else "safe_fallback"
+            )
+        else:
+            next_config, rule_application = runtime.apply_rule_action(
+                base_config,
+                dispatch["proposed_action"],
+                self._fix_selection_value,
+            )
+            logs = [
+                f"[ROUND {current_round}] Qualification rules applied "
+                f"({rule_application['guardrail_result']})"
+            ]
+            decision_source = "rules"
+        controller_time_us = max(
+            0, (time.perf_counter_ns() - started) // 1000,
+        )
+        trace_path = runtime.write_policy_trace(
+            self.live_policy_settings,
+            request,
+            dispatch,
+            teacher_audit,
+            rule_application,
+            base_config,
+            controller_time_us,
+        )
+        logs.insert(
+            0,
+            f"[Distilled Policy] mode={self.live_policy_settings.mode}; "
+            f"source={decision_source}; trace={trace_path.name}",
+        )
+        return next_config, logs
+
 
     def _decide_next_config(self, base_config: Dict, current_round: int) -> Tuple[Dict, List[str]]:
         pol = (self.policy or "").lower().strip()
         if not pol or "none" in pol or "off" in pol:
             return copy.deepcopy(base_config), [f"[ROUND {current_round}] Adaptation disabled ('{self.policy}')"]
+        if pol == "distilled policy":
+            return self._decide_distilled_policy(base_config, current_round)
         if "single" in pol:
             return self._decide_single_agent(base_config, current_round)
         if "random" in pol:

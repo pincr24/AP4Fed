@@ -2,6 +2,7 @@ import glob
 import json
 import os
 import re
+import time
 from typing import List
 
 from adaptation_metrics import _sa_aggregate_round
@@ -447,16 +448,45 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev, metrics_root=No
     
     return instructions + (rag or "") + "## Decision\n"
 
-def _sa_generate_with_retry(model_name: str, mode: str, config, last_round, agg, ap_prev, base_urls: List[str], options: dict = None):
+def _sa_generate_with_retry(
+    model_name: str,
+    mode: str,
+    config,
+    last_round,
+    agg,
+    ap_prev,
+    base_urls: List[str],
+    options: dict = None,
+    audit: dict = None,
+):
     build_prompt = _runtime_attr("_sa_build_prompt", _sa_build_prompt)
     call_ollama = _runtime_attr("_sa_call_ollama", _sa_call_ollama)
     parse_output = _runtime_attr("_sa_parse_output", _sa_parse_output)
     p = build_prompt(mode, config, last_round, agg, ap_prev)
-    raw = call_ollama(
-        model_name, p, base_urls,
-        force_json=True,
-        options=(options if options is not None else {"temperature": 1.0, "top_p": 0.9, "num_ctx": 8192})
-    )
+    if audit is not None:
+        audit["prompt"] = p
+    started = time.perf_counter()
+    try:
+        raw = call_ollama(
+            model_name, p, base_urls,
+            force_json=True,
+            options=(options if options is not None else {"temperature": 1.0, "top_p": 0.9, "num_ctx": 8192})
+        )
+    except Exception as error:
+        if audit is not None:
+            audit.update({
+                "status": "error",
+                "latency_ms": (time.perf_counter() - started) * 1000.0,
+                "error_type": type(error).__name__,
+                "error_message": str(error),
+            })
+        raise
+    if audit is not None:
+        audit.update({
+            "status": "success",
+            "latency_ms": (time.perf_counter() - started) * 1000.0,
+            "raw_response": raw,
+        })
     d1, r1, _ = parse_output(raw)
     return d1, r1
 

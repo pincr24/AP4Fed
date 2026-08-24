@@ -13,6 +13,7 @@ services:
       - ./configuration:/app/configuration
       - ./model_weights:/app/model_weights
       - .:/app
+      - ../distill:/distill:ro
       - /var/run/docker.sock:/var/run/docker.sock 
     environment:
       DOCKER_HOST_IP: host.docker.internal

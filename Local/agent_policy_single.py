@@ -5,7 +5,13 @@ from typing import Dict, List, Tuple
 
 
 class SingleAgentPolicyMixin:
-    def _decide_single_agent(self, base_config: Dict, current_round: int) -> Tuple[Dict, List[str]]:
+    def _decide_single_agent(
+        self,
+        base_config: Dict,
+        current_round: int,
+        teacher_policy: str = None,
+        audit: Dict = None,
+    ) -> Tuple[Dict, List[str]]:
         from adaptation import (
             PATTERNS,
             _append_agent_log,
@@ -32,12 +38,26 @@ class SingleAgentPolicyMixin:
 
         ap_prev = self._read_previous_ap_state()
 
-        mode = _sa_mode_from_policy(self.policy)
+        mode = _sa_mode_from_policy(teacher_policy or self.policy)
         try:
             decisions, rationale = _sa_generate_with_retry(
-                self.sa_model, mode, base_config, last_round, agg, ap_prev, self.sa_ollama_urls
+                self.sa_model,
+                mode,
+                base_config,
+                last_round,
+                agg,
+                ap_prev,
+                self.sa_ollama_urls,
+                audit=audit,
             )
-        except Exception:
+        except Exception as error:
+            if audit is not None and audit.get("status") != "error":
+                audit.update({
+                    "status": "error",
+                    "latency_ms": 0.0,
+                    "error_type": type(error).__name__,
+                    "error_message": str(error),
+                })
             return copy.deepcopy(base_config), logs
 
         prev_cs  = "✅" if ap_prev.get("client_selector") == "ON" else "❌"
@@ -69,6 +89,18 @@ class SingleAgentPolicyMixin:
             if p in new_config.get("patterns", {}):
                 new_config["patterns"][p]["enabled"] = (decisions.get(p, "OFF") == "ON")
 
+        guardrail_result = "unchanged"
+        action_before_guardrail = {
+            "client_selector": {
+                "enabled": "ON" if decisions.get("client_selector") == "ON" else "OFF"
+            },
+            "message_compressor": {
+                "enabled": "ON" if decisions.get("message_compressor") == "ON" else "OFF"
+            },
+            "heterogeneous_data_handler": {
+                "enabled": "ON" if decisions.get("heterogeneous_data_handler") == "ON" else "OFF"
+            },
+        }
         cs_enabled = bool(new_config.get("patterns", {}).get("client_selector", {}).get("enabled"))
         if cs_enabled:
             existing = new_config["patterns"]["client_selector"].get("params", {}).get("selection_value")
@@ -83,16 +115,30 @@ class SingleAgentPolicyMixin:
                 except Exception:
                     sel_val = 3
 
-            sel_val = self._fix_selection_value(sel_val, base_config)
-            if sel_val is None:
+            action_before_guardrail["client_selector"]["selection_value"] = sel_val
+            fixed_sel_val = self._fix_selection_value(sel_val, base_config)
+            if fixed_sel_val is None:
                 new_config["patterns"]["client_selector"]["enabled"] = False
+                guardrail_result = "client_selector_disabled"
                 logs.append("[Single-Agent] CS suggested ON but no safe selection_value exists for the current CPU distribution. CS kept OFF.")
+                if audit is not None:
+                    audit.update({
+                        "action_before_guardrail": action_before_guardrail,
+                        "guardrail_result": guardrail_result,
+                    })
                 return new_config, logs
+            if fixed_sel_val != sel_val:
+                guardrail_result = "selection_value_adjusted"
 
             new_config["patterns"]["client_selector"]["params"] = {
                 "selection_strategy": "Resource-Based",
                 "selection_criteria": "CPU",
-                "selection_value": sel_val
+                "selection_value": fixed_sel_val
             }
 
+        if audit is not None:
+            audit.update({
+                "action_before_guardrail": action_before_guardrail,
+                "guardrail_result": guardrail_result,
+            })
         return new_config, logs
