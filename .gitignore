@@ -22,4 +22,3 @@ paper_campaigns/**/experiments/**/*.csv
 !distill/data/
 !distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/
 !distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/**
-tests/
