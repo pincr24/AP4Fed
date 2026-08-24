@@ -3,13 +3,13 @@
 ## Goal
 
 Expand the rule-mining evidence beyond the single 90-decision archive used in Sprint 01.
-The first step is to make dataset extraction reusable across AP4Fed experiment arms and
+The first step is to make dataset extraction reusable across AP4Fed archived experiment
 configurations.
 
 Data coverage will then be expanded in two ways:
 
-1. Reconstruct realistic states from other archived experiment arms and label selected
-   states offline with the chosen teacher.
+1. Reconstruct realistic states from other archived experiment configurations
+   and label selected states offline with the chosen teacher.
 2. Run AP4Fed with targeted client and workload configurations where the archive
    provides insufficient evidence.
 
@@ -50,16 +50,17 @@ policies from being accidentally pooled as teacher labels.
 
 ## Prepared archive campaign
 
-`campaigns/agentic_paper_state_bank_sources.json` freezes the archive arms to extract
-before new labels are observed. It contains 14 compatible experiments: 8
-FashionMNIST/CNN-16k arms and 6 AG_NEWS/MLP arms, totalling 140 runs and 1,260 decision
-states. The few-shot DeepSeek baseline contributes its 90 direct archived labels; the
-other 1,170 states remain unlabelled.
+`campaigns/agentic_paper_state_bank_sources.json` freezes the archived experiment
+configurations to extract before new labels are observed. It contains 13 compatible
+experiments: 8 FashionMNIST/CNN-16k configurations and 5 AG_NEWS/MLP configurations,
+totalling 130 runs and 1,170 decision states. The few-shot DeepSeek baseline contributes
+its 90 direct archived labels; the other 1,080 states remain unlabelled.
 
-Four FashionMNIST arms are explicitly excluded: debate-based has an incomplete run,
-few-shot GPT has an empty run, and expert-driven and never lack their configuration
-files. A full dry run of the list reproduced the declared experiment, run, state, and
-label counts.
+Five archived experiment configurations are explicitly excluded: FashionMNIST
+debate-based has an incomplete run, FashionMNIST few-shot GPT has an empty run,
+FashionMNIST expert-driven and never lack their configuration files, and AG_NEWS
+voting-based lacks `r8.csv`. A full extraction of the list reproduced the declared
+experiment, run, state, and label counts.
 
 ## Next sprint boundary
 
