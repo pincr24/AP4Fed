@@ -2,9 +2,6 @@ pycache/*
 *.pyc
 *.log
 **/data
-!distill/data/
-!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/
-!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/**
 **/Local/img
 **/Local/model_weights
 **/Docker/img
@@ -21,3 +18,8 @@ run_logs/
 strategy_comparison_results/
 strategy_smoke*.json
 paper_campaigns/**/experiments/**/*.csv
+#Distillation extension
+!distill/data/
+!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/
+!distill/data/paper_archive_fashionmnist_cnn16k_fewshot_deepseek/**
+tests/

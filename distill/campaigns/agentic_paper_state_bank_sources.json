@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "description": "Complete, compatible agentic-paper archive arms for the Sprint 02 state bank. The chosen-teacher baseline retains direct behavior labels; every other arm contributes states only.",
+  "selection_rule": "Include every archived experiment arm with config.json, exact contiguous r<N>.csv runs, and one valid AP vector for every configured round. Reject incomplete arms as a whole rather than silently dropping runs.",
+  "expected": {
+    "experiments": 14,
+    "runs": 140,
+    "decision_states": 1260,
+    "direct_archived_labels": 90
+  },
+  "experiments": [
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/few-shot deepseek",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-deepseek",
+      "output_name": "fashionmnist__cnn16k__few-shot-deepseek",
+      "label_mode": "source-behavior"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/few-shot llama",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-llama",
+      "output_name": "fashionmnist__cnn16k__few-shot-llama",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/random",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/random",
+      "output_name": "fashionmnist__cnn16k__random",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/role-based",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/role-based",
+      "output_name": "fashionmnist__cnn16k__role-based",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/voting-based",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/voting-based",
+      "output_name": "fashionmnist__cnn16k__voting-based",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/zero-shot deepseek",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-deepseek",
+      "output_name": "fashionmnist__cnn16k__zero-shot-deepseek",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/zero-shot gpt",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-gpt",
+      "output_name": "fashionmnist__cnn16k__zero-shot-gpt",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/fashionmnist__cnn16k/experiments/zero-shot llama",
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-llama",
+      "output_name": "fashionmnist__cnn16k__zero-shot-llama",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/debate-based",
+      "source_id": "agentic-paper-archive/ag_news__mlp/debate-based",
+      "output_name": "ag_news__mlp__debate-based",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/expert-driven",
+      "source_id": "agentic-paper-archive/ag_news__mlp/expert-driven",
+      "output_name": "ag_news__mlp__expert-driven",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/never",
+      "source_id": "agentic-paper-archive/ag_news__mlp/never",
+      "output_name": "ag_news__mlp__never",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/random",
+      "source_id": "agentic-paper-archive/ag_news__mlp/random",
+      "output_name": "ag_news__mlp__random",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/role-based",
+      "source_id": "agentic-paper-archive/ag_news__mlp/role-based",
+      "output_name": "ag_news__mlp__role-based",
+      "label_mode": "states-only"
+    },
+    {
+      "source": "../paper_campaigns/ag_news__mlp/experiments/voting-based",
+      "source_id": "agentic-paper-archive/ag_news__mlp/voting-based",
+      "output_name": "ag_news__mlp__voting-based",
+      "label_mode": "states-only"
+    }
+  ],
+  "excluded": [
+    {
+      "source": "fashionmnist__cnn16k/experiments/debate-based",
+      "reason": "r9.csv has AP vectors only for rounds 1 through 7, but config.json declares 10 rounds."
+    },
+    {
+      "source": "fashionmnist__cnn16k/experiments/expert-driven",
+      "reason": "config.json is absent, so the state and configuration provenance cannot be reconstructed auditably."
+    },
+    {
+      "source": "fashionmnist__cnn16k/experiments/few-shot gpt",
+      "reason": "r3.csv is empty."
+    },
+    {
+      "source": "fashionmnist__cnn16k/experiments/never",
+      "reason": "config.json is absent, so the state and configuration provenance cannot be reconstructed auditably."
+    }
+  ]
+}
