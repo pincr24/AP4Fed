@@ -21,7 +21,7 @@ without duplicating its features.
 ## Unit of state
 
 One row in `decision_states.csv` represents the state visible when AP4Fed makes
-decision `d`. Under the archive timing contract, the resulting action appears
+decision `d`. Under the archive timing specification, the resulting action appears
 in the AP vector applied in round `d + 1`. A ten-round run therefore provides
 nine decision states.
 
@@ -60,11 +60,11 @@ same state.
 | Value | Meaning |
 |---|---|
 | `direct_archived_behavior` | The archived source policy is explicitly treated as the teacher; its factual CS, MC, and HDH actions are copied into the label record. |
+| `offline_teacher_query` | AP4Fed's declared teacher was queried offline on a reconstructed archived state; the attempt is counterfactual with respect to the archived trajectory. |
 
 An unlabelled state is represented by having no row in `labels.csv`; it does
-not need a sentinel `label_kind`. The offline relabelling stage must introduce
-and document a distinct value before writing counterfactual teacher-query
-labels. It must not reuse `direct_archived_behavior`.
+not need a sentinel `label_kind`. Offline relabelling uses
+`offline_teacher_query`; it must not reuse `direct_archived_behavior`.
 
 ## Provenance in `audit.json`
 
@@ -96,6 +96,11 @@ writes an empty `labels.csv`.
 creates one `direct_archived_behavior` label per state. Offline relabelling will
 add separate label attempts while retaining the immutable state and factual
 source action.
+
+The offline labelling run keeps its append-only attempt audit and raw responses
+outside these per-configuration extraction artifacts. Its derived `labels.csv`
+uses the same normalized columns and can later be joined by `record_id` and
+`attempt_id` without modifying `decision_states.csv`.
 
 ## Timing and history
 

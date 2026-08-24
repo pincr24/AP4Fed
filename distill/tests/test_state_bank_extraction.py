@@ -27,8 +27,8 @@ AP_COLUMN = (
 
 
 class ConfiguredExtractorTest(unittest.TestCase):
-    def make_arm(self, root: Path) -> Path:
-        source = root / "arm"
+    def make_configuration(self, root: Path) -> Path:
+        source = root / "configuration"
         source.mkdir()
         config = {
             "adaptation": "Random",
@@ -84,7 +84,7 @@ class ConfiguredExtractorTest(unittest.TestCase):
 
     def test_states_only_separates_source_actions_from_teacher_labels(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            source = self.make_arm(Path(tmp))
+            source = self.make_configuration(Path(tmp))
             result = extract_experiment(ExperimentSource(source, "archive/ag-news/random"))
 
         self.assertEqual(2, len(result.states))
@@ -110,7 +110,7 @@ class ConfiguredExtractorTest(unittest.TestCase):
 
     def test_source_behavior_is_an_explicit_label_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            source = self.make_arm(Path(tmp))
+            source = self.make_configuration(Path(tmp))
             result = extract_experiment(
                 ExperimentSource(
                     source, "archive/ag-news/random", label_mode="source-behavior"
@@ -130,7 +130,7 @@ class ConfiguredExtractorTest(unittest.TestCase):
     def test_writer_separates_states_labels_and_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source = self.make_arm(root)
+            source = self.make_configuration(root)
             result = extract_experiment(ExperimentSource(source, "archive/ag-news/random"))
             output = root / "output"
             write_extraction(output, result)
@@ -155,7 +155,7 @@ class ConfiguredExtractorTest(unittest.TestCase):
     def test_source_list_supplies_experiments_and_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source = self.make_arm(root)
+            source = self.make_configuration(root)
             source_list = root / "sources.json"
             source_list.write_text(json.dumps({
                 "schema_version": 1,

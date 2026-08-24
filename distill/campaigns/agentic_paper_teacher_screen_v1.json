@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "selection_id": "agentic-paper-teacher-screen-v1",
+  "selection_rule": "Seed r1::d1 from every retained configuration. Then visit configurations lexicographically and choose one mid decision (d4-d6) and one late decision (d7-d9), minimizing current previous-AP-context count, distance from target (r5,d5) or (r10,d9), numeric run, numeric decision, and record ID in that order. The ten predeclared calibration records span both workloads and all eight previous-AP contexts and receive five attempts; all others receive one.",
+  "state_bank_sha256": "0bb39bbf9113ffa53061963e40105f9d9f0b9ad6e427c34c27dfce81794392d6",
+  "expected": {
+    "source_configurations": 13,
+    "state_bank_states": 1170,
+    "selected_states": 39,
+    "query_budget_per_teacher": 79,
+    "calibration_states": 10,
+    "calibration_attempts_per_state": 5,
+    "calibration_workload_counts": {
+      "FashionMNIST__CNN_16k": 5,
+      "AG_NEWS__MLP": 5
+    },
+    "calibration_previous_ap_context_counts": {
+      "OFF/OFF/OFF": 2,
+      "OFF/OFF/ON": 1,
+      "OFF/ON/OFF": 1,
+      "OFF/ON/ON": 1,
+      "ON/OFF/OFF": 1,
+      "ON/OFF/ON": 1,
+      "ON/ON/OFF": 1,
+      "ON/ON/ON": 2
+    },
+    "workload_counts": {
+      "FashionMNIST__CNN_16k": 24,
+      "AG_NEWS__MLP": 15
+    },
+    "previous_ap_contexts": [
+      "OFF/OFF/OFF",
+      "OFF/OFF/ON",
+      "OFF/ON/OFF",
+      "OFF/ON/ON",
+      "ON/OFF/OFF",
+      "ON/OFF/ON",
+      "ON/ON/OFF",
+      "ON/ON/ON"
+    ]
+  },
+  "records": [
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/debate-based/r1::d1",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/debate-based/r5::d5",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/debate-based/r9::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/expert-driven/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/expert-driven/r5::d5",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/expert-driven/r8::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/never/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/never/r5::d5",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/never/r10::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/random/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/random/r5::d5",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/random/r9::d7",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/role-based/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/role-based/r6::d5",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/ag_news__mlp/role-based/r10::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-deepseek/r1::d1",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-deepseek/r3::d5",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-deepseek/r9::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-llama/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-llama/r5::d5",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-llama/r9::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/random/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/random/r4::d6",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/random/r10::d9",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/role-based/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/role-based/r6::d5",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/role-based/r9::d8",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/voting-based/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/voting-based/r4::d6",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/voting-based/r10::d7",
+      "attempts": 5,
+      "purpose": "calibration"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-deepseek/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-deepseek/r6::d4",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-deepseek/r10::d8",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-gpt/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-gpt/r3::d5",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-gpt/r7::d9",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-llama/r1::d1",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-llama/r5::d5",
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "record_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-llama/r5::d8",
+      "attempts": 1,
+      "purpose": "primary"
+    }
+  ]
+}

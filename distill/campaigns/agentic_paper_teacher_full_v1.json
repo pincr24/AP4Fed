@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "selection_id": "agentic-paper-teacher-full-v1",
+  "selection_rule": "For each of the 13 retained source configurations, expand every run from r1 through r10 and every decision index from d1 through d9. Query all 1,170 expanded states once with the primary teacher after the screening result has been reviewed.",
+  "state_bank_sha256": "0bb39bbf9113ffa53061963e40105f9d9f0b9ad6e427c34c27dfce81794392d6",
+  "expected": {
+    "source_configurations": 13,
+    "state_bank_states": 1170,
+    "selected_states": 1170,
+    "query_budget": 1170
+  },
+  "groups": [
+    {
+      "source_id": "agentic-paper-archive/ag_news__mlp/debate-based",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/ag_news__mlp/expert-driven",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/ag_news__mlp/never",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/ag_news__mlp/random",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/ag_news__mlp/role-based",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-deepseek",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/few-shot-llama",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/random",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/role-based",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/voting-based",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-deepseek",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-gpt",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    },
+    {
+      "source_id": "agentic-paper-archive/fashionmnist__cnn16k/zero-shot-llama",
+      "run_range": {
+        "start": 1,
+        "end": 10
+      },
+      "decision_range": {
+        "start": 1,
+        "end": 9
+      },
+      "attempts": 1,
+      "purpose": "primary"
+    }
+  ]
+}

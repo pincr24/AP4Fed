@@ -16,7 +16,14 @@ def _runtime_attr(name, default):
     except Exception:
         return default
 
-def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
+
+def _sa_metrics_glob(pattern, metrics_root=None):
+    if metrics_root is not None:
+        pattern = os.path.join(str(metrics_root), pattern)
+    return glob.glob(pattern, recursive=True)
+
+
+def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev, metrics_root=None):
     def _fmt(x, nd=3):
         try:
             return f"{float(x):.{nd}f}"
@@ -173,9 +180,13 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
         metrics_digest = {}
         last_file = None
         try:
-            files = glob.glob("**/FLwithAP_performance_metrics_round*.csv", recursive=True)
+            files = _sa_metrics_glob(
+                "**/FLwithAP_performance_metrics_round*.csv", metrics_root
+            )
             if not files:
-                files = glob.glob("**/FLwithAP_performance_metrics*.csv", recursive=True)
+                files = _sa_metrics_glob(
+                    "**/FLwithAP_performance_metrics*.csv", metrics_root
+                )
 
             def rnum(p):
                 m = re.search(r"round(\d+)", os.path.basename(p))
@@ -183,6 +194,10 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
 
             if files:
                 last_file = max(files, key=rnum)
+                last_file_label = (
+                    os.path.relpath(last_file, str(metrics_root))
+                    if metrics_root is not None else last_file
+                )
                 try:
                     import pandas as pd
                     df = pd.read_csv(last_file)
@@ -239,7 +254,7 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
                         }
 
                     metrics_digest = {
-                        "file": last_file,
+                        "file": last_file_label,
                         "columns": {"F1": col_f1, "TrainingTime": col_tr, "CommTime": col_cm, "TotalTime": col_tt},
                         "F1": stats(s_f1),
                         "TrainingTime_s": stats(s_tr),
@@ -247,7 +262,10 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
                         "TotalRoundTime_s": stats(s_tt),
                     }
                 except Exception:
-                    metrics_digest = {"file": last_file, "error": "failed_to_parse_csv"}
+                    metrics_digest = {
+                        "file": last_file_label,
+                        "error": "failed_to_parse_csv",
+                    }
             else:
                 metrics_digest = {"file": None, "error": "no_metrics_csv_found"}
         except Exception:
@@ -262,7 +280,12 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
 
             prev_candidates = [
                 (r, p)
-                for r, p in [(_rnum_for_prev(p), p) for p in glob.glob("**/FLwithAP_performance_metrics_round*.csv", recursive=True)]
+                for r, p in [
+                    (_rnum_for_prev(p), p)
+                    for p in _sa_metrics_glob(
+                        "**/FLwithAP_performance_metrics_round*.csv", metrics_root
+                    )
+                ]
                 if r >= 0 and round_no is not None and r < round_no
             ]
             if prev_candidates:
@@ -337,7 +360,12 @@ def _sa_build_prompt(mode: str, config, round_idx, agg, ap_prev):
                 m = re.search(r"round(\d+)", os.path.basename(p))
                 return int(m.group(1)) if m else -1
 
-            files = [(_rnum(p), p) for p in glob.glob("**/FLwithAP_performance_metrics_round*.csv", recursive=True)]
+            files = [
+                (_rnum(p), p)
+                for p in _sa_metrics_glob(
+                    "**/FLwithAP_performance_metrics_round*.csv", metrics_root
+                )
+            ]
             files = sorted([x for x in files if x[0] >= 0], key=lambda x: x[0])
             prev_window = [(r, p) for r, p in files if r < int(round_idx or 0)][-4:]
             recent = []

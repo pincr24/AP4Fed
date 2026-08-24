@@ -20,7 +20,7 @@ LabelMode = Literal["states-only", "source-behavior"]
 LABEL_MODES = ("states-only", "source-behavior")
 
 # These positions belong to AP4Fed's six-slot metrics format. They are a log
-# schema contract, not properties of a particular experiment.
+# schema specification, not properties of a particular experiment.
 AP_SLOTS = {"cs": 0, "mc": 2, "hdh": 5}
 DIGEST_METRICS = ("f1", "traintime", "commtime", "totaltime")
 
@@ -57,7 +57,7 @@ LABEL_RECORD_COLUMNS = (
 
 @dataclass(frozen=True)
 class ExperimentSource:
-    """Identify one experiment arm without embedding it in extraction code.
+    """Identify one experiment configuration without embedding it in extraction code.
 
     ``source_id`` is a stable logical identifier used in record IDs and audit
     data. It should remain the same if the files move to another machine.
@@ -146,12 +146,12 @@ def _load_config(source: Path) -> tuple[dict[str, object], str]:
         )
 
     # Feature Specification v1 represents workload as one categorical value,
-    # so a single arm cannot mix datasets or models between its clients.
+    # so one configuration cannot mix datasets or models between its clients.
     datasets = {str(client.get("dataset", "")).strip() for client in clients}
     models = {str(client.get("model", "")).strip() for client in clients}
     if "" in datasets or "" in models or len(datasets) != 1 or len(models) != 1:
         raise ValueError(
-            f"{config_path}: expected one workload per arm; "
+            f"{config_path}: expected one workload per configuration; "
             f"found datasets={sorted(datasets)}, models={sorted(models)}"
         )
     return config, _sha256(config_path)
@@ -413,7 +413,7 @@ def _situation_features(
 
 
 def extract_experiment(spec: ExperimentSource) -> ExtractionResult:
-    """Extract one experiment arm into audited decision states.
+    """Extract one experiment configuration into audited decision states.
 
     In ``states-only`` mode, the archived next action remains factual source
     provenance and label fields stay empty for later teacher relabelling.

@@ -15,10 +15,10 @@ Data coverage will then be expanded in two ways:
 
 ## Reusable extractor
 
-`archive_extractor.py` contains the reusable one-arm extraction contract. It derives the
-workload, source policy, configured model, client count, round count, and run inventory
-from each experiment's `config.json`, while retaining the 48 inputs from Feature
-Specification v1.
+`archive_extractor.py` contains the reusable single-configuration extraction interface.
+It derives the workload, source policy, configured model, client count, round count,
+and run inventory from each experiment's `config.json`, while retaining the 48 inputs
+from Feature Specification v1.
 
 `build_state_bank.py` is the user-facing orchestrator. It accepts either one explicit
 experiment or a schema-versioned JSON source list supplied by the campaign. No
@@ -61,6 +61,28 @@ debate-based has an incomplete run, FashionMNIST few-shot GPT has an empty run,
 FashionMNIST expert-driven and never lack their configuration files, and AG_NEWS
 voting-based lacks `r8.csv`. A full extraction of the list reproduced the declared
 experiment, run, state, and label counts.
+
+## Offline teacher elicitor
+
+`teacher_elicitor.py` now implements prompt-faithful offline labelling for a
+predeclared selection of normalized records. It validates the complete state bank
+against the frozen raw sources, reconstructs the decision-time metric-file view, calls
+the Docker single-agent prompt/parser path, applies the live Client Selector safety
+rule, and writes resumable attempt provenance plus a derived normalized label table.
+An in-flight query marker prevents resume from silently repeating a model call whose
+completion is uncertain after an abrupt interruption.
+
+The frozen screening manifest contains 39 states, three from every retained
+configuration, and covers all eight previous-pattern contexts. Ten balanced
+calibration states receive five attempts, for 79 calls per candidate teacher.
+The separate full-bank manifest groups the 13 configurations and covers all
+1,170 states once. Screening outputs remain gate evidence rather than being
+merged into the full training labels.
+
+No teacher labels have been queried yet. The remaining evidence work is to prepare a
+clean model-serving environment, run and review the teacher screen, conditionally run
+the primary-teacher full bank, and audit coverage. The implementation and run
+interface are documented in [teacher-elicitation.md](teacher-elicitation.md).
 
 ## Next sprint boundary
 

@@ -25,10 +25,11 @@ AP4Fed trajectories
     -> fresh closed-loop AP4Fed evaluation
 ```
 
-The repository currently provides state extraction, campaign assembly, and a frozen
-CONFOLD baseline. Sprint 02 is expanding this into a broader labelled state bank and
-auditing its coverage. Calibrated dispatch and closed-loop evaluation belong to later
-sprints. The active milestone and its actual check results are recorded in
+The repository currently provides state extraction, campaign assembly, selective
+offline teacher labelling, and a frozen CONFOLD baseline. Sprint 02 is expanding this
+into a broader labelled state bank and auditing its coverage. Calibrated dispatch and
+closed-loop evaluation belong to later sprints. The active milestone and its actual
+check results are recorded in
 [the Sprint 02 implementation report](docs/sprint-02-data-coverage.md), keeping this
 overview focused on the stable workflow.
 
@@ -45,8 +46,8 @@ and timing remain fixed while the evidence base grows:
 - `audit.json` records source identity, hashes, extraction settings, factual archived
   actions, and label status.
 
-These three files belong to one experiment arm (not to the campaign as a whole or an
-individual run). Each `decision_states.csv` combines the decision states from all
+These three files belong to one archived experiment configuration (not to the campaign
+as a whole or an individual run). Each `decision_states.csv` combines the states from all
 `r<N>.csv` runs found for that experiment. Its `labels.csv` and `audit.json` cover the
 same experiment and run inventory.
 
@@ -79,10 +80,12 @@ outcome cannot be presented as the effect of the newly elicited action.
 
 ## Available components
 
-- `archive_extractor.py` — validates one AP4Fed experiment arm, reconstructs Feature
+- `archive_extractor.py` — validates one AP4Fed experiment configuration, reconstructs Feature
   Specification v1 states, and writes the states with their provenance.
 - `build_state_bank.py` — extracts either one source or a versioned JSON source list; it
   defaults to unlabelled states for offline teacher labelling.
+- `teacher_elicitor.py` — validates a frozen state selection, reconstructs the
+  teacher-visible history, and writes resumable offline label attempts.
 - `extract_paper_decision_dataset.py` — preserves the independent Sprint 01 baseline
   command and reproduces its frozen output.
 - `run_confold_baseline.py` — runs the initial symbolic CONFOLD baseline.
@@ -111,14 +114,14 @@ The extractor writes `decision_dataset.csv` and `audit.json`. The CONFOLD run wr
 results to the dataset's `confold_baseline/` directory. Its result and limitations are
 documented in [sprint-01-baseline.md](docs/sprint-01-baseline.md).
 
-## Extract one experiment arm
+## Extract one archived experiment configuration
 
 Assign the experiment a stable logical source ID rather than using its local filesystem
 path as its identity:
 
 ```sh
 python3 distill/build_state_bank.py \
-  --source <archive-arm-directory> \
+  --source <archived-experiment-directory> \
   --source-id <archive/workload/policy> \
   --output <output-directory>
 ```
@@ -156,10 +159,31 @@ Higher-level Python code can construct `ExperimentSource` values and call
 `extract_experiment()` directly. Neither reusable layer fixes a particular experiment,
 model, client count, round count, run count, or output location.
 
-The prepared agentic-paper selection is
+The prepared agentic-paper source inventory is
 [`campaigns/agentic_paper_state_bank_sources.json`](campaigns/agentic_paper_state_bank_sources.json).
-Its inventory, exclusions, dry-run result, and unfinished evidence work are reported in
+The frozen query plans are
+[`campaigns/agentic_paper_teacher_screen_v1.json`](campaigns/agentic_paper_teacher_screen_v1.json)
+and
+[`campaigns/agentic_paper_teacher_full_v1.json`](campaigns/agentic_paper_teacher_full_v1.json).
+Their inventory, exclusions, dry-run results, and unfinished evidence work are reported in
 [the Sprint 02 implementation report](docs/sprint-02-data-coverage.md).
+
+## Label selected states offline
+
+Freeze the selected record IDs and attempt counts before observing new teacher labels.
+Then validate the state bank without contacting the model:
+
+```sh
+python3 distill/teacher_elicitor.py validate \
+  --sources-file distill/campaigns/agentic_paper_state_bank_sources.json \
+  --state-bank-root <campaign-output-directory> \
+  --selection <selection.json>
+```
+
+The separate `label` operation requires a clean producing checkout, records the exact
+teacher model digest and prompt hashes, and writes raw responses outside the learner
+table. See [teacher-elicitation.md](docs/teacher-elicitation.md) for the selection
+schema, run command, resume rules, artifacts, and interpretation constraint.
 
 ## Documentation map
 
@@ -167,5 +191,7 @@ Its inventory, exclusions, dry-run result, and unfinished evidence work are repo
   result, and interpretation limits.
 - [Sprint 02 data coverage](docs/sprint-02-data-coverage.md) — reusable extraction
   milestone, campaign inventory, checks, and remaining work.
+- [Offline teacher elicitation](docs/teacher-elicitation.md) — selection input,
+  prompt reconstruction, run artifacts, and resume behaviour.
 - [Dataset specification](docs/dataset-specification.md) — schemas, alignment,
   provenance, and versioning rules.

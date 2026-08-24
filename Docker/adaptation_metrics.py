@@ -2,8 +2,11 @@ import glob
 import os
 import re
 
-def _sa_latest_round_csv():
-    files = glob.glob("**/FLwithAP_performance_metrics_round*.csv", recursive=True)
+def _sa_latest_round_csv(metrics_root=None):
+    pattern = "**/FLwithAP_performance_metrics_round*.csv"
+    if metrics_root is not None:
+        pattern = os.path.join(str(metrics_root), pattern)
+    files = glob.glob(pattern, recursive=True)
     if not files:
         return None, None
     def rnum(p):
