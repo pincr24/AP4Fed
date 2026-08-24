@@ -661,6 +661,7 @@ def weighted_average_global(
         srt1,
         srt2,
         time_between_rounds,
+        ssim_overhead=None,
         aggregation_baseline="FedAvg",
 ):
     if agg_model_type not in global_metrics:

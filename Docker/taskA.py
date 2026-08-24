@@ -3,6 +3,7 @@ import json
 import os
 import random
 import re
+import sys
 import time
 import urllib.request
 import zlib
@@ -754,6 +755,17 @@ def _ensure_agnews_csv(split: str) -> Path:
     return path
 
 
+def _configure_csv_field_size_limit() -> None:
+    """Allow the full AG News article text to be read from its CSV source."""
+    limit = sys.maxsize
+    while True:
+        try:
+            csv.field_size_limit(limit)
+            return
+        except OverflowError:
+            limit //= 10
+
+
 def _tokenize_agnews(text: str) -> List[int]:
     tokens = re.findall(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)?", text.lower())
     if not tokens:
@@ -779,6 +791,7 @@ def agnews_collate_batch(batch):
 
 class AGNewsDataset(Dataset):
     def __init__(self, split: str) -> None:
+        _configure_csv_field_size_limit()
         path = _ensure_agnews_csv(split)
         self.rows = []
         with path.open("r", encoding="utf-8", newline="") as handle:

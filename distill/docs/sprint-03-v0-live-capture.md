@@ -143,4 +143,12 @@ Before the active qualification run:
 4. repeat the smoke in Docker, which is the substantive experiment backend;
 5. record the producing clean Git SHA and backend identity.
 
+The first AG News Docker control attempt on 2026-08-24 was invalid before its
+first policy decision: one source CSV row exceeded Python's default parser
+field limit, and Docker aggregation referenced an uninitialised
+`ssim_overhead` value. The repaired reader and aggregation interface have
+focused regression checks. A new clean implementation revision and a fresh
+Docker control trajectory are still required; the failed attempt is not v0
+evidence.
+
 No canonical FL outcome claim follows from the deterministic tests alone.
